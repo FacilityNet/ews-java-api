@@ -78,5 +78,6 @@ jobs:
         ignore: /.*/
     steps:
       - run:
+        name: Deploy to GitHub
         when: on_success
         command: mvn deploy -Drevision=$(echo "$CIRCLE_TAG" | cut -c 2-) -Dchangelist= -Dsha1= -Dregistry=https://maven.pkg.github.com/FacilityNet -Dtoken=$GITHUB_DEPLOY_TOKEN
