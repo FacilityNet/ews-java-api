@@ -60,6 +60,7 @@ public class MapiTypeConverterMapEntry {
           Map<Class<?>, Object> map = new HashMap<Class<?>, Object>();
 
           map.put(Boolean.class, false);
+          map.put(byte[].class, null);
           map.put(Byte[].class, null);
           map.put(Short.class, new Short((short) 0));
           map.put(Integer.class, 0);

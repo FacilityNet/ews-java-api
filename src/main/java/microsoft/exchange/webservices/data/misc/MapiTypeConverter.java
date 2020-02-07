@@ -76,7 +76,7 @@ public class MapiTypeConverter {
            mapitype.setIsArray(true);
            map.put(MapiPropertyType.ApplicationTimeArray, mapitype);
 
-           mapitype = new MapiTypeConverterMapEntry(Byte[].class);
+           mapitype = new MapiTypeConverterMapEntry(byte[].class);
            mapitype.setParse(IFunctions.Base64Decoder.INSTANCE);
            mapitype.setConvertToString(IFunctions.Base64Encoder.INSTANCE);
            map.put(MapiPropertyType.Binary, mapitype);
