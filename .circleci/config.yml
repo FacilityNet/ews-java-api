@@ -1,0 +1,82 @@
+# Java Maven CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2
+jobs:
+  - build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/openjdk:8-jdk
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo
+
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run: mvn --version
+      - run: mvn dependency:go-offline
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+
+      # run tests!
+      - run: mvn integration-test
+
+      - run:
+          name: Collecting test reports
+          when: always
+          command: |
+            shopt -s nullglob
+            mkdir -p target/circleci-test-reports
+            for f in */target/surefire-reports
+            do
+              PROJ=$(echo "$f" | cut -d "/" -f1)  # find name of project folder
+              echo "Copy test reports from $f to target/circleci-test-reports/$PROJ"
+              mkdir "target/circleci-test-reports/$PROJ"
+              cp "$f"/*.xml "target/circleci-test-reports/$PROJ"
+            done
+
+      - run:
+          name: Collecting artifacts
+          when: on_success
+          command: |
+            mkdir -p target/circleci-artifacts
+            cp */target/*.jar target/circleci-artifacts/
+
+      - store_test_results:
+          path: target/circleci-test-reports
+      - store_artifacts:
+          path: target/circleci-artifacts
+          destination: dist
+
+  - deploy-release:
+    requires:
+      - build
+    filters:
+      tags:
+        only: /^v.*/
+      branches:
+        ignore: /.*/
+    steps:
+      - run:
+        when: on_success
+        command: mvn deploy -Drevision=$(echo "$CIRCLE_TAG" | cut -c 2-) -Dchangelist= -Dsha1= -Dregistry=https://maven.pkg.github.com/FacilityNet -Dtoken=$GITHUB_DEPLOY_TOKEN

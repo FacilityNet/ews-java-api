@@ -28,16 +28,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.microsoft.ews-java-api</groupId>
+    <groupId>dk.facilitynet.connectors.calendar</groupId>
     <artifactId>ews-java-api</artifactId>
     
-    <version>2.1-SNAPSHOT</version>
+    <version>${revision}${changelist}${sha1}</version>
 
-    <name>Exchange Web Services Java API</name>
-    <description>Exchange Web Services (EWS) Java API</description>
+    <description>Exchange Web Services (EWS) Java API - FacilityNet fork</description>
 
     <!-- Required by the site command for certain relative URL configuration. -->
-    <url>http://www.microsoft.com/</url>
+    <url>https://facilitynet.io/</url>
 
     <!-- Used by the javadoc plugin to generate the comments at the bottom. -->
     <inceptionYear>2012</inceptionYear>
@@ -49,30 +48,15 @@
     </prerequisites>
 
     <organization>
-        <name>Microsoft</name>
-        <url>http://www.microsoft.com/</url>
+        <name>FacilityNet</name>
+        <url>https://facilitynet.io/</url>
     </organization>
 
-    <developers>
-        <developer>
-            <id>vboctor</id>
-            <name>Victor Boctor</name>
-            <email>vboctor@users.noreply.github.com</email>
-            <url>http://www.github.com/officedev/ews-java-api</url>
-            <organization>Microsoft</organization>
-            <organizationUrl>http://www.microsoft.com</organizationUrl>
-            <roles>
-                <role>administrator</role>
-                <role>developer</role>
-            </roles>
-            <timezone>America/New_York</timezone>
-            <properties>
-                 <picUrl>http://www.example.com/jdoe/pic</picUrl>
-            </properties>
-        </developer>
-    </developers>
-
     <properties>
+        <revision>2.0.1</revision>
+        <changelist>-SNAPSHOT</changelist>
+        <sha1></sha1>
+
         <!-- Eliminates the file encoding warning. Of course, all of your files
             should probably be UTF-8 nowadays. -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -190,27 +174,10 @@
         <system>GitHub Issues</system>
     </issueManagement>
 
-    <ciManagement>
-        <system>travis</system>
-        <url>https://travis-ci.org/OfficeDev/ews-java-api</url>
-    </ciManagement>
-
     <scm>
-        <url>https://github.com/OfficeDev/ews-java-api</url>
-        <connection>scm:git:ssh://git@github.com:OfficeDev/ews-java-api.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:OfficeDev/ews-java-api.git</developerConnection>
+        <url>https://github.com/FacilityNet/ews-java-api</url>
+        <connection>scm:git:https://github.com/FacilityNet/ews-java-api.git</connection>
     </scm>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh-snapshot</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -295,17 +262,46 @@
 
     <build>
         <plugins>
-            <!-- Deployment / build plugins -->
+            <!-- Used to replace CI version placeholders with actual versions in generated pom -->
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>${nexus-staging-maven-plugin.version}</version>
-                <extensions>true</extensions>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.2.1</version>
                 <configuration>
-                    <!-- Ref.: http://books.sonatype.com/nexus-book/reference/staging-deployment.html -->
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>defaults</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Used by CircleCI -->
+            <plugin>
+                <groupId>de.qaware.maven</groupId>
+                <artifactId>go-offline-maven-plugin</artifactId>
+                <version>1.2.5</version>
+                <configuration>
+                    <dynamicDependencies>
+                        <DynamicDependency>
+                            <groupId>org.apache.maven.surefire</groupId>
+                            <artifactId>surefire-junit4</artifactId>
+                            <version>2.20.1</version>
+                            <repositoryType>PLUGIN</repositoryType>
+                        </DynamicDependency>
+                    </dynamicDependencies>
                 </configuration>
             </plugin>
             <plugin>
