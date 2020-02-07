@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  - build:
+  build:
     docker:
       # specify the version you desire here
       - image: circleci/openjdk:8-jdk
@@ -68,7 +68,7 @@ jobs:
           path: target/circleci-artifacts
           destination: dist
 
-  - deploy-release:
+  deploy-release:
     requires:
       - build
     filters:
