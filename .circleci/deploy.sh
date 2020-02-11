@@ -3,13 +3,13 @@ if [ "$CIRCLECI" != "true" ]; then
   exit -1
 fi
 
-if [ "$REGISTRY_URL" == "" ]; then
-  echo "Registry URL not set, skip deploy"
+if [ "$DEPLOY_USERNAME" == "" ]; then
+  echo "Deploy username not set, skip deploy"
   exit -2
 fi
 
-if [ "$DEPLOY_TOKEN" == "" ]; then
-  echo "No deploy token found, skip deploy"
+if [ "$DEPLOY_PASSWORD" == "" ]; then
+  echo "Deploy password not set, skip deploy"
   exit -3
 fi
 
@@ -36,6 +36,6 @@ then
   echo "No valid version tag found, skip deploy"
 else
   echo "Deploying release $REV$CHANGE$SHA1 to GitHub Packages"
-  mvn deploy -Drevision="$REV" -Dchangelist="$CHANGE" -Dsha1="$SHA1" -Dregistry="$REGISTRY_URL" -Dtoken="$DEPLOY_TOKEN"
+  mvn deploy -s shared-settings.xml -Drevision="$REV" -Dchangelist="$CHANGE" -Dsha1="$SHA1"
 fi
 
