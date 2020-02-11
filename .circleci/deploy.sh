@@ -36,6 +36,6 @@ then
   echo "No valid version tag found, skip deploy"
 else
   echo "Deploying release $REV$CHANGE$SHA1 to GitHub Packages"
-  mvn deploy -s shared-settings.xml -Drevision="$REV" -Dchangelist="$CHANGE" -Dsha1="$SHA1"
+  DEPLOY_USERNAME=$DEPLOY_USERNAME DEPLOY_PASSWORD=$DEPLOY_PASSWORD mvn deploy -s shared-settings.xml -Drevision="$REV" -Dchangelist="$CHANGE" -Dsha1="$SHA1"
 fi
 
