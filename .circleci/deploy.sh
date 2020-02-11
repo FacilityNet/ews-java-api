@@ -13,7 +13,11 @@ if [ "$DEPLOY_TOKEN" == "" ]; then
   exit -3
 fi
 
+# Ensure we have tags available locally
+git fetch --tags
+
 #EXACT_TAG=$(git describe --exact-match --match "v*")
+# Find number of commits since latest version tag
 COMMITS_SINCE=$(git describe --match "v*" | cut -d "-" -s -f 2)
 
 # Revision is set to nearest tag of form vX.Y
