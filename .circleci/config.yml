@@ -68,16 +68,7 @@ jobs:
           path: target/circleci-artifacts
           destination: dist
 
-  deploy-release:
-    requires:
-      - build
-    filters:
-      tags:
-        only: /^v.*/
-      branches:
-        ignore: /.*/
-    steps:
       - run:
-        name: Deploy to GitHub
-        when: on_success
-        command: mvn deploy -Drevision=$(echo "$CIRCLE_TAG" | cut -c 2-) -Dchangelist= -Dsha1= -Dregistry=https://maven.pkg.github.com/FacilityNet -Dtoken=$GITHUB_DEPLOY_TOKEN
+          name: Deploy to Maven repository
+          when: on_success
+          command: ./.circleci/deploy.sh
