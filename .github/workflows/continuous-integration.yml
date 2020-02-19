@@ -14,7 +14,7 @@ jobs:
         with:
           fetch-depth: 0 # we need full history to use set-version below
 
-      - uses: FacilityNet/set-version@releases/v1
+      - uses: FacilityNet/set-version@17b116e
         id: set_version
 
       - uses: actions/cache@v1
