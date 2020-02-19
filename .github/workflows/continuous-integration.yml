@@ -11,9 +11,8 @@ jobs:
     name: maven-compile-test-deploy
     steps:
       - uses: actions/checkout@v2
-
-      - name: Fetch git tags
-        run: git fetch --tags
+        with:
+          fetch-depth: 0 # we need full history to use set-version below
 
       - uses: FacilityNet/set-version@releases/v1
         id: set_version
