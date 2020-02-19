@@ -30,7 +30,7 @@ jobs:
           java-version: 1.8
 
       - name: Publish to GitHub Packages
-        run: mvn deploy -Drevision=${{ format('{0}.{1}.{2}', steps.set_version.outputs.major, steps.set_version.outputs.minor, steps.set_version.outputs.patch) }}
+        run: mvn deploy -Drevision=${{ format('{0}.{1}.{2}', steps.set_version.outputs.major, steps.set_version.outputs.minor, steps.set_version.outputs.patch) }} -Dchangelist= -Dsha1=
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}
