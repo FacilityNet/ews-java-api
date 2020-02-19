@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  - build:
+  build:
     docker:
       # specify the version you desire here
       - image: circleci/openjdk:8-jdk
@@ -47,20 +47,14 @@ jobs:
           command: |
             shopt -s nullglob
             mkdir -p target/circleci-test-reports
-            for f in */target/surefire-reports
-            do
-              PROJ=$(echo "$f" | cut -d "/" -f1)  # find name of project folder
-              echo "Copy test reports from $f to target/circleci-test-reports/$PROJ"
-              mkdir "target/circleci-test-reports/$PROJ"
-              cp "$f"/*.xml "target/circleci-test-reports/$PROJ"
-            done
+            cp target/surefire-reports/*.xml target/circleci-test-reports
 
       - run:
           name: Collecting artifacts
           when: on_success
           command: |
             mkdir -p target/circleci-artifacts
-            cp */target/*.jar target/circleci-artifacts/
+            cp target/*.jar target/circleci-artifacts/
 
       - store_test_results:
           path: target/circleci-test-reports
@@ -68,15 +62,9 @@ jobs:
           path: target/circleci-artifacts
           destination: dist
 
-  - deploy-release:
-    requires:
-      - build
-    filters:
-      tags:
-        only: /^v.*/
-      branches:
-        ignore: /.*/
-    steps:
       - run:
-        when: on_success
-        command: mvn deploy -Drevision=$(echo "$CIRCLE_TAG" | cut -c 2-) -Dchangelist= -Dsha1= -Dregistry=https://maven.pkg.github.com/FacilityNet -Dtoken=$GITHUB_DEPLOY_TOKEN
+          name: Deploy to Maven repository
+          when: on_success
+          command: |
+            chmod a+x .circleci/deploy.sh
+            ./.circleci/deploy.sh
