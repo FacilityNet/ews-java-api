@@ -14,8 +14,11 @@ jobs:
         with:
           fetch-depth: 0 # we need full history to use set-version below
 
-      - uses: FacilityNet/set-version@releases/v1
+      - uses: FacilityNet/set-version@v1
         id: set_version
+        with:
+          eventName: ${{ github.event_name }}
+          event: ${{ toJSON(github.event) }}
 
       - uses: actions/cache@v1
         with:
@@ -30,7 +33,7 @@ jobs:
           java-version: 1.8
 
       - name: Publish to GitHub Packages
-        run: mvn deploy -Drevision=${{ format('{0}.{1}.{2}', steps.set_version.outputs.major, steps.set_version.outputs.minor, steps.set_version.outputs.patch) }} -Dchangelist= -Dsha1=
+        run: mvn deploy -Drevision=${{ steps.set_version.outputs.fullNoMeta }} -Dchangelist= -Dsha1=
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}
